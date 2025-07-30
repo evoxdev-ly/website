@@ -3,7 +3,7 @@
     <div class="flex items-center justify-between py-4 border-b border-gray-600">
       <!-- Logo -->
       <div class="text-2xl font-bold tracking-tight">
-        <img src="{{ asset('imgs/logo_evox.png') }}" alt="Evoxdev Logo" class="h-6">
+        <img src="{{ asset('storage/' . $settings->logo_header) }}" alt="Evoxdev Logo" class="h-6">
       </div>
 
       <!-- Desktop Navigation -->

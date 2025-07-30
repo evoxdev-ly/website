@@ -1,9 +1,9 @@
 <footer class="bg-black text-white py-12 mt-16 border-t border-gray-800">
   <div class="container-box grid grid-cols-1 md:grid-cols-3 gap-8">
     <div>
-      <img src="{{ asset('imgs/logo_branca_evox.webp') }}" alt="Evoxdev Logo" class="h-8 mb-4">
+      <img src="{{ asset('storage/' . $settings->logo_footer) }}" alt="Evoxdev Logo" class="h-8 mb-4">
       <p class="text-sm text-gray-400">
-        Desenvolvimento web focado em performance, visual moderno e soluções personalizadas.
+        {{ $settings->about_us }}
       </p>
     </div>
 
@@ -19,8 +19,8 @@
 
     <div class="space-y-2">
       <h3 class="text-lg font-semibold uppercase text-white mb-2">Contato</h3>
-      <p class="text-sm text-gray-400">contato@evoxdev.com.br</p>
-      <p class="text-sm text-gray-400">+55 (11) 91234-5678</p>
+      <p class="text-sm text-gray-400">{{ $settings->contact_email }}</p>
+      <p class="text-sm text-gray-400">@formatPhone($settings->phone)</p>
       <div class="flex space-x-4 mt-3">
         <a href="#" class="hover:text-white transition">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
