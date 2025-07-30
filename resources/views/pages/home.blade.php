@@ -26,7 +26,7 @@
 
 
 
-  <section class="bg-black py-16 px-6">
+  <section class="bg-black py-16">
     <div class="container-box">
       <h2 class="text-white text-lg mb-12">Nossa visão</h2>
 
@@ -35,11 +35,11 @@
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi quis quam ullamcorper, rutrum dolor eu,
         </x-feature-card>
 
-        <x-feature-card title="Entrega rápida de projetos" active>
+        <x-feature-card title="Entrega rápida de projetos">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi quis quam ullamcorper, rutrum dolor eu,
         </x-feature-card>
 
-        <x-feature-card title="Entrega rápida de projetos" active>
+        <x-feature-card title="Entrega rápida de projetos">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi quis quam ullamcorper, rutrum dolor eu,
         </x-feature-card>
       </div>
