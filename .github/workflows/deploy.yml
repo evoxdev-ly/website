@@ -14,41 +14,45 @@ jobs:
       - name: 🚚 Checkout latest code
         uses: actions/checkout@v4
 
-      - name: 🛠️ Setup SSH
+      - name: 📦 Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: 📥 Install dependencies and build assets
+        run: |
+          npm ci
+          npm run build
+
+      - name: 📤 Copy built assets to server (via SCP)
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.HOMOLOG_SSH_KEY }}" > ~/.ssh/CaiqueJar
           chmod 600 ~/.ssh/CaiqueJar
           ssh-keyscan -p 65002 46.202.145.2 >> ~/.ssh/known_hosts
 
+          scp -P 65002 -i ~/.ssh/CaiqueJar -r public/build u182216510@46.202.145.2:/home/u182216510/domains/evoxdev.com.br/public_html/public/
+
       - name: 🚀 Run deployment script on server
         run: |
           ssh -p 65002 -i ~/.ssh/CaiqueJar u182216510@46.202.145.2 << 'EOF'
-            # Navega até a pasta do projeto
             cd /home/u182216510/domains/evoxdev.com.br/public_html
 
-            # Garante que o GitHub está confiável
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            if [ ! -d .git ]; then
+              echo "⚠️  Este diretório não é um repositório Git. Clonagem inicial pode ser necessária."
+            else
+              git reset --hard HEAD
+              git clean -fd
+              git pull origin homolog
+            fi
 
-            # Atualiza o código
-            git reset --hard HEAD
-            git clean -fd
-            git pull origin homolog
-
-            # Configura o ambiente
             cp .env.homolog .env
 
-            # Baixa o Composer e instala dependências PHP
             php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
             php composer-setup.php --install-dir=. --filename=composer.phar
             php -r "unlink('composer-setup.php');"
             php composer.phar install --no-interaction --prefer-dist --optimize-autoloader
 
-            # Instala dependências JS e faz build
-            npm install
-            npm run build
-
-            # Roda migrations e limpa os caches
             php artisan migrate --force
             php artisan config:clear
             php artisan route:clear
