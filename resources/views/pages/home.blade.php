@@ -87,5 +87,6 @@
     </div>
   </section>
 
+  <x-contact-form />
 
 </x-app>

@@ -8,11 +8,17 @@
   <title>{{ $title ?? '' }} | Evoxdev</title>
 
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+  @livewireStyles
 </head>
 
 <body>
   <x-header />
+  
   {{ $slot }}
+
+  <x-footer />
+
+  @livewireScripts
 </body>
 
 </html>
