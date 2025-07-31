@@ -14,44 +14,47 @@ jobs:
       - name: 🚚 Checkout latest code
         uses: actions/checkout@v4
 
+      - name: 📦 Setup PHP 8.3 + Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, bcmath, curl, dom, fileinfo, openssl, pdo, tokenizer, xml, zip
+          tools: composer
+
+      - name: 📥 Install Composer dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader
+
       - name: 📦 Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      - name: 📥 Install dependencies and build assets
+      - name: 🛠 Build assets
         run: |
           npm ci
           npm run build
 
-      - name: 📤 Copy built assets to server (via SCP)
+      - name: 🔐 Setup SSH key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.HOMOLOG_SSH_KEY }}" > ~/.ssh/CaiqueJar
           chmod 600 ~/.ssh/CaiqueJar
           ssh-keyscan -p 65002 46.202.145.2 >> ~/.ssh/known_hosts
 
-          scp -P 65002 -i ~/.ssh/CaiqueJar -r public/build u182216510@46.202.145.2:/home/u182216510/domains/evoxdev.com.br/public_html/public/
+      - name: 🚀 Enviar tudo via SCP
+        run: |
+          rsync -avz -e "ssh -p 65002 -i ~/.ssh/CaiqueJar" \
+          --exclude=".git" \
+          --exclude="node_modules" \
+          --exclude=".github" \
+          --exclude="tests" \
+          ./ u182216510@46.202.145.2:/home/u182216510/domains/evoxdev.com.br/public_html/
 
-      - name: 🚀 Run deployment script on server
+      - name: 🛠 Rodar comandos Artisan no servidor
         run: |
           ssh -p 65002 -i ~/.ssh/CaiqueJar u182216510@46.202.145.2 << 'EOF'
             cd /home/u182216510/domains/evoxdev.com.br/public_html
 
-            if [ ! -d .git ]; then
-              echo "⚠️  Este diretório não é um repositório Git. Clonagem inicial pode ser necessária."
-            else
-              git reset --hard HEAD
-              git clean -fd
-              git pull origin homolog
-            fi
-
-            cp .env.homolog .env
-
-            php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
-            php composer-setup.php --install-dir=. --filename=composer.phar
-            php -r "unlink('composer-setup.php');"
-            php composer.phar install --no-interaction --prefer-dist --optimize-autoloader
 
             php artisan migrate --force
             php artisan config:clear
